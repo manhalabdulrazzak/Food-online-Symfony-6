@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block%} Burger web App {% endblock %}</title>
+        <link rel="icon" href="{{ asset('assets/ico.png') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <!--CSS files-->
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+        {% endblock %}
+        <!--JS files-->
+        {% block javascripts %}
+            <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
+            <script src="{{ asset('assets/js/scripts.js') }}" defer></script>
+        {% endblock %}
+    <body>
+    {% include "_partials/_nav.html.twig" %}
+    {% block body %}{% endblock %}
+    {% include "_partials/_footer.html.twig" %}
+    </body>
+</html>

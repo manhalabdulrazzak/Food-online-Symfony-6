@@ -27,14 +27,14 @@ class Products
     #[ORM\Column(type: 'integer')]
     private $stock;
 
-    #[ORM\Column(type: 'datetime_immutable',options: ['default'=>'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private $created_at;
 
     #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private $categories;
 
-    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Images::class)]
+    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Images::class, orphanRemoval: true)]
     private $images;
 
     #[ORM\OneToMany(mappedBy: 'products', targetEntity: OrdersDetails::class)]
@@ -124,7 +124,7 @@ class Products
     }
 
     /**
-     * @return Collection<int, Images>
+     * @return Collection|Images[]
      */
     public function getImages(): Collection
     {
@@ -154,7 +154,7 @@ class Products
     }
 
     /**
-     * @return Collection<int, OrdersDetails>
+     * @return Collection|OrdersDetails[]
      */
     public function getOrdersDetails(): Collection
     {

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CouponsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CouponsRepository::class)]
@@ -13,7 +15,7 @@ class Coupons
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 30)]
+    #[ORM\Column(type: 'string', length: 30, unique: true)]
     private $code;
 
     #[ORM\Column(type: 'text')]
@@ -31,8 +33,20 @@ class Coupons
     #[ORM\Column(type: 'boolean')]
     private $is_valid;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime_immutable',options: ['default'=>'CURRENT_TIMESTAMP'])]
     private $created_at;
+
+    #[ORM\ManyToOne(targetEntity: CouponsType::class, inversedBy: 'coupons')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $coupns_types;
+
+    #[ORM\OneToMany(mappedBy: 'coupons', targetEntity: Orders::class)]
+    private $orders;
+
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -119,6 +133,48 @@ class Coupons
     public function setCreatedAt(\DateTimeImmutable $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getCoupnsTypes(): ?CouponsType
+    {
+        return $this->coupns_types;
+    }
+
+    public function setCoupnsTypes(?CouponsType $coupns_types): self
+    {
+        $this->coupns_types = $coupns_types;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Orders>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Orders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setCoupons($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Orders $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getCoupons() === $this) {
+                $order->setCoupons(null);
+            }
+        }
 
         return $this;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\SlugTrait;
 use App\Repository\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 class Categories
 {
+    use SlugTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -19,6 +21,7 @@ class Categories
     private $name;
 
     #[ORM\OneToMany(mappedBy: 'parnet', targetEntity: Categories::class)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private $categories;
 
     #[ORM\OneToMany(mappedBy: 'categories', targetEntity: Products::class)]

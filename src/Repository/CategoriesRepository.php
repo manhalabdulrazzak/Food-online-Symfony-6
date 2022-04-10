@@ -22,8 +22,6 @@ class CategoriesRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function add(Categories $entity, bool $flush = true): void
     {
@@ -34,8 +32,6 @@ class CategoriesRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function remove(Categories $entity, bool $flush = true): void
     {

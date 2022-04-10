@@ -9,24 +9,38 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CategoriesFixtures extends Fixture
 {
-    /**
-     * @param SluggerInterface $slugger
-     */
-    public function __construct(private sluggerInterface $slugger ){}
+    private $counter = 1;
+
+    public function __construct(private SluggerInterface $slugger){}
 
     public function load(ObjectManager $manager): void
     {
-        $parent = new Categories();
-        $parent ->setName('burger');
-        $parent ->setSlug($this->slugger->slug($parent->getName()));
-        $manager->persist($parent);
+        $parent = $this->createCategory('Informatique', null, $manager);
 
-        $category = new Categories();
-        $category ->setName('burger2');
-        $category ->setSlug($this->slugger->slug($category->getName()));
-        $manager->persist($category);
+        $this->createCategory('Ordinateurs portables', $parent, $manager);
+        $this->createCategory('Ecrans', $parent, $manager);
+        $this->createCategory('Souris', $parent, $manager);
 
+        $parent = $this->createCategory('Mode', null, $manager);
+
+        $this->createCategory('Homme', $parent, $manager);
+        $this->createCategory('Femme', $parent, $manager);
+        $this->createCategory('Enfant', $parent, $manager);
 
         $manager->flush();
+    }
+
+    public function createCategory(string $name, Categories $parent = null, ObjectManager $manager)
+    {
+        $category = new Categories();
+        $category->setName($name);
+        $category->setSlug($this->slugger->slug($category->getName())->lower());
+        $category->setParent($parent);
+        $manager->persist($category);
+
+        $this->addReference('cat-'.$this->counter, $category);
+        $this->counter++;
+
+        return $category;
     }
 }

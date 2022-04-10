@@ -12,16 +12,20 @@ use Doctrine\ORM\Mapping as ORM;
 class Categories
 {
     use SlugTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 150)]
+    #[ORM\Column(type: 'string', length: 100)]
     private $name;
 
-    #[ORM\OneToMany(mappedBy: 'parnet', targetEntity: Categories::class)]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'categories')]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    private $parent;
+
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private $categories;
 
     #[ORM\OneToMany(mappedBy: 'categories', targetEntity: Products::class)]
@@ -50,30 +54,42 @@ class Categories
         return $this;
     }
 
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
     /**
-     * @return Collection<int, Categories>
+     * @return Collection|self[]
      */
     public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    public function addCategory(Categories $category): self
+    public function addCategory(self $category): self
     {
         if (!$this->categories->contains($category)) {
             $this->categories[] = $category;
-            $category->setParnet($this);
+            $category->setParent($this);
         }
 
         return $this;
     }
 
-    public function removeCategory(Categories $category): self
+    public function removeCategory(self $category): self
     {
         if ($this->categories->removeElement($category)) {
             // set the owning side to null (unless already changed)
-            if ($category->getParnet() === $this) {
-                $category->setParnet(null);
+            if ($category->getParent() === $this) {
+                $category->setParent(null);
             }
         }
 
@@ -81,7 +97,7 @@ class Categories
     }
 
     /**
-     * @return Collection<int, Products>
+     * @return Collection|Products[]
      */
     public function getProducts(): Collection
     {

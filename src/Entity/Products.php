@@ -43,11 +43,19 @@ class Products
     #[ORM\OneToMany(mappedBy: 'products', targetEntity: OrdersDetails::class)]
     private $ordersDetails;
 
+    #[ORM\OneToMany(mappedBy: 'Products', targetEntity: Attribute::class)]
+    private $attributes;
+
+    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Addons::class)]
+    private $addons;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->ordersDetails = new ArrayCollection();
         $this->created_at = new \DateTimeImmutable();
+        $this->attributes = new ArrayCollection();
+        $this->addons = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -169,6 +177,66 @@ class Products
             // set the owning side to null (unless already changed)
             if ($ordersDetail->getProducts() === $this) {
                 $ordersDetail->setProducts(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Attribute>
+     */
+    public function getAttributes(): Collection
+    {
+        return $this->attributes;
+    }
+
+    public function addAttribute(Attribute $attribute): self
+    {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes[] = $attribute;
+            $attribute->setProducts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttribute(Attribute $attribute): self
+    {
+        if ($this->attributes->removeElement($attribute)) {
+            // set the owning side to null (unless already changed)
+            if ($attribute->getProducts() === $this) {
+                $attribute->setProducts(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Addons>
+     */
+    public function getAddons(): Collection
+    {
+        return $this->addons;
+    }
+
+    public function addAddon(Addons $addon): self
+    {
+        if (!$this->addons->contains($addon)) {
+            $this->addons[] = $addon;
+            $addon->setProducts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddon(Addons $addon): self
+    {
+        if ($this->addons->removeElement($addon)) {
+            // set the owning side to null (unless already changed)
+            if ($addon->getProducts() === $this) {
+                $addon->setProducts(null);
             }
         }
 
